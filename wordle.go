@@ -2,7 +2,12 @@
 
 package main
 
-import "fmt"
+import (
+	"bufio"
+	"fmt"
+	"log"
+	"os"
+)
 
 type node struct {
 	children map[rune]node
@@ -15,15 +20,17 @@ func init_node() node {
 }
 
 func build_initial_tree(dictionary_path string) node {
-	// TODO: replace with build from file
-	simple_words := []string{"cat", "hat", "hits"}
+	words_file, err := os.Open(dictionary_path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer words_file.Close()
 
-	// fmt.Println("build_initial_tree word_len:", len(word))
-	// node = child_node
-	// node := root
+	// add each word to the solution space
+	scanner := bufio.NewScanner(words_file)
 	root := init_node()
-	for _, word := range simple_words {
-		add_word(root, word)
+	for scanner.Scan() {
+		add_word(root, scanner.Text())
 	}
 
 	dump_tree(root)
@@ -75,7 +82,7 @@ func main() {
 
 	// create problem space from full dictionary
 	//space :=
-	build_initial_tree("./dictionary.txt")
+	build_initial_tree("./dictionary_len5.txt")
 
 	fmt.Println("Goodbye World!")
 }
