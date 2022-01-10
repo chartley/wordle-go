@@ -4,9 +4,17 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"os"
+	"strings"
+)
+
+type LetterValidity string
+
+const (
+	PresentAndCorrectSpot LetterValidity = "correct"
+	PresentButWrongSpot                  = "wrongspot"
+	NotInAnySpot                         = "notpresent"
 )
 
 type node struct {
@@ -64,7 +72,7 @@ func dump_tree(root node) {
 			for _, child_node := range nodes_level[i].children {
 				nodes_next = append(nodes_next, child_node)
 				n_nodes += 1
-				// fmt.Println("dump_tree() i", i, "nodes_level, ", len(nodes_level), "nodes_next", len(nodes_next), "char", string(char))
+				// log.Println("dump_tree() i", i, "nodes_level, ", len(nodes_level), "nodes_next", len(nodes_next), "char", string(char))
 			}
 		}
 
@@ -74,7 +82,21 @@ func dump_tree(root node) {
 		n_levels += 1
 	}
 
-	fmt.Println("dump_tree()", n_nodes, "nodes, ", n_levels, "levels")
+	log.Println("dump_tree()", n_nodes, "nodes, ", n_levels, "levels")
+}
+
+func evaluate_solution(reference_word string, guess_word string) [5]LetterValidity {
+	feedback := [5]LetterValidity{}
+	for i := 0; i < len(guess_word); i += 1 {
+		if guess_word[i] == reference_word[i] {
+			feedback[i] = PresentAndCorrectSpot
+		} else if strings.Contains(reference_word, string(guess_word[i])) {
+			feedback[i] = PresentButWrongSpot
+		} else {
+			feedback[i] = NotInAnySpot
+		}
+	}
+	return feedback
 }
 
 func main() {
@@ -84,5 +106,5 @@ func main() {
 	//space :=
 	build_initial_tree("./dictionary_len5.txt")
 
-	fmt.Println("Goodbye World!")
+	log.Println("Goodbye World!")
 }
