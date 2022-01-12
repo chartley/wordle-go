@@ -1,4 +1,4 @@
-package main
+package gameengine
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 func TestEvaluateSolutioncorrect(t *testing.T) {
 	guess_word := "hello"
 	reference_word := "hello"
-	feedback := evaluate_solution(reference_word, guess_word)
+	feedback := EvaluateSolution(reference_word, guess_word)
 	expected_feedback := [5]LetterValidity{
 		PresentAndCorrectSpot,
 		PresentAndCorrectSpot,
@@ -23,7 +23,7 @@ func TestEvaluateSolutioncorrect(t *testing.T) {
 func TestEvaluateSolutionAllWrong(t *testing.T) {
 	guess_word := "hello"
 	reference_word := "grain"
-	feedback := evaluate_solution(reference_word, guess_word)
+	feedback := EvaluateSolution(reference_word, guess_word)
 	expected_feedback := [5]LetterValidity{
 		NotInAnySpot,
 		NotInAnySpot,
@@ -39,7 +39,7 @@ func TestEvaluateSolutionAllWrong(t *testing.T) {
 func TestEvaluateSolutionSingleMisplacedLetter(t *testing.T) {
 	guess_word := "hello"
 	reference_word := "chain"
-	feedback := evaluate_solution(reference_word, guess_word)
+	feedback := EvaluateSolution(reference_word, guess_word)
 	expected_feedback := [5]LetterValidity{
 		PresentButWrongSpot,
 		NotInAnySpot,
