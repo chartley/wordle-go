@@ -3,85 +3,48 @@
 package main
 
 import (
-	"bufio"
 	"log"
-	"os"
+	"wordle-go/gameengine"
+	"wordle-go/playerengine"
 )
 
-type node struct {
-	children map[rune]node
-}
+func solve_random_word() {
+	// create the player
+	dictionary_path := "./dictionary_len5.txt"
+	player := playerengine.InitPlayer(dictionary_path)
 
-func init_node() node {
-	n := node{}
-	n.children = map[rune]node{}
-	return n
-}
+	// choose a random target word
+	target_word := gameengine.ChooseRandomWord(dictionary_path)
+	log.Println("Target word", target_word)
 
-func build_initial_tree(dictionary_path string) node {
-	words_file, err := os.Open(dictionary_path)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer words_file.Close()
-
-	// add each word to the solution space
-	scanner := bufio.NewScanner(words_file)
-	root := init_node()
-	for scanner.Scan() {
-		add_word(root, scanner.Text())
+	// constant for "solved" feedback
+	solvedFeedback := [5]gameengine.LetterValidity{
+		gameengine.PresentAndCorrectSpot,
+		gameengine.PresentAndCorrectSpot,
+		gameengine.PresentAndCorrectSpot,
+		gameengine.PresentAndCorrectSpot,
+		gameengine.PresentAndCorrectSpot,
 	}
 
-	dump_tree(root)
-
-	return root
-}
-
-func add_word(root node, word string) {
-	node_here := root
-	for word_i := 0; word_i < len(word); word_i++ {
-		letter := rune(word[word_i])
-		child_node, found := node_here.children[letter]
-		if found {
-			// found, build down the tree
-			node_here = child_node
+	// take guesses until solved for out of tries
+	solved := false
+	for i := 0; i < 6; i += 1 {
+		guess_word := playerengine.Guess(player)
+		feedback := gameengine.EvaluateSolution(target_word, guess_word)
+		if feedback == solvedFeedback {
+			log.Println("Solved in ", (i + 1))
+			solved = true
 		} else {
-			// not found; add node then iterate
-			node_here.children[letter] = init_node()
-			node_here = node_here.children[letter]
+			playerengine.ProcessFeedback(player, feedback)
 		}
 	}
-}
 
-func dump_tree(root node) {
-	nodes_level := []node{root}
-	n_nodes := 1
-	n_levels := 1
-	nodes_next := []node{}
-	for len(nodes_level) > 0 {
-		for i := 0; i < len(nodes_level); i += 1 {
-			for _, child_node := range nodes_level[i].children {
-				nodes_next = append(nodes_next, child_node)
-				n_nodes += 1
-				// log.Println("dump_tree() i", i, "nodes_level, ", len(nodes_level), "nodes_next", len(nodes_next), "char", string(char))
-			}
-		}
-
-		// iterate through next level
-		nodes_level = nodes_next
-		nodes_next = []node{}
-		n_levels += 1
+	if !solved {
+		log.Println("Failed to solve")
 	}
-
-	log.Println("dump_tree()", n_nodes, "nodes, ", n_levels, "levels")
 }
 
 func main() {
-	// sanity check - test word is in dictionary :) wordle is uk spelling
-
-	// create problem space from full dictionary
-	//space :=
-	build_initial_tree("./dictionary_len5.txt")
-
+	solve_random_word() // alternatively solve a live puzzle, without knowing the word
 	log.Println("Goodbye World!")
 }

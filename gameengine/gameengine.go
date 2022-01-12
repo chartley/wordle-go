@@ -1,6 +1,12 @@
 package gameengine
 
-import "strings"
+import (
+	"bufio"
+	"log"
+	"math/rand"
+	"os"
+	"strings"
+)
 
 type LetterValidity string
 
@@ -9,6 +15,8 @@ const (
 	PresentButWrongSpot                  = "wrongspot"
 	NotInAnySpot                         = "notpresent"
 )
+
+type Feedback [5]LetterValidity
 
 func EvaluateSolution(reference_word string, guess_word string) [5]LetterValidity {
 	feedback := [5]LetterValidity{}
@@ -22,4 +30,21 @@ func EvaluateSolution(reference_word string, guess_word string) [5]LetterValidit
 		}
 	}
 	return feedback
+}
+
+func ChooseRandomWord(dictionary_path string) string {
+	file, err := os.Open(dictionary_path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	var lines []string
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+
+	randomIndex := rand.Intn(len(lines))
+	return lines[randomIndex]
 }
