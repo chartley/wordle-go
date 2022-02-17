@@ -3,6 +3,8 @@
 package main
 
 import (
+	"bufio"
+	"fmt"
 	"log"
 	"os"
 	"wordle-go/gameengine"
@@ -11,6 +13,15 @@ import (
 
 const DictionaryPath = "./dictionary_len5.txt"
 
+// constant for "solved" feedback
+var solvedFeedback = [...]gameengine.LetterValidity{
+	gameengine.PresentAndCorrectSpot,
+	gameengine.PresentAndCorrectSpot,
+	gameengine.PresentAndCorrectSpot,
+	gameengine.PresentAndCorrectSpot,
+	gameengine.PresentAndCorrectSpot,
+}
+
 func solve_random_word_list() {
 	// create the player
 	player := playerenginelist.InitPlayer(DictionaryPath)
@@ -18,15 +29,6 @@ func solve_random_word_list() {
 	// choose a random target word
 	target_word := gameengine.ChooseRandomWord(DictionaryPath)
 	log.Println("Target word", target_word)
-
-	// constant for "solved" feedback
-	solvedFeedback := [5]gameengine.LetterValidity{
-		gameengine.PresentAndCorrectSpot,
-		gameengine.PresentAndCorrectSpot,
-		gameengine.PresentAndCorrectSpot,
-		gameengine.PresentAndCorrectSpot,
-		gameengine.PresentAndCorrectSpot,
-	}
 
 	// take guesses until solved for out of tries
 	solved := false
@@ -49,15 +51,6 @@ func solve_random_word_list() {
 }
 
 func benchmark_random_word_list() {
-	// constant for "solved" feedback
-	solvedFeedback := [5]gameengine.LetterValidity{
-		gameengine.PresentAndCorrectSpot,
-		gameengine.PresentAndCorrectSpot,
-		gameengine.PresentAndCorrectSpot,
-		gameengine.PresentAndCorrectSpot,
-		gameengine.PresentAndCorrectSpot,
-	}
-
 	words := gameengine.ReadAllWords(DictionaryPath)
 	attemps := make([]int, len(words))
 	for j, target_word := range words {
@@ -101,9 +94,48 @@ func benchmark_random_word_list() {
 	log.Println()
 }
 
+func solve_interactive() {
+	// create the player
+	player := playerenginelist.InitPlayer(DictionaryPath)
+
+	for {
+		// tell user the guess, have them enter it into Wordle
+		guess_word := playerenginelist.Guess(player)
+		fmt.Printf("guess = %s input as [y=yes, s=somewhere, n=no] eg nnsns ; or q to quit\n", guess_word)
+		fmt.Print("Enter feedback: ")
+
+		// get the response back
+		reader := bufio.NewReader(os.Stdin)
+		text, _ := reader.ReadString('\n')
+		if len(text) < 5 {
+			fmt.Println("Quitting...")
+			break
+		}
+
+		// convert to gameengine.LetterValidity array
+		feedback := [5]gameengine.LetterValidity{}
+		for i := 0; i < 5; i += 1 {
+			if text[i] == 'y' {
+				feedback[i] = gameengine.PresentAndCorrectSpot
+			} else if text[i] == 's' {
+				feedback[i] = gameengine.PresentButWrongSpot
+			} else if text[i] == 'n' {
+				feedback[i] = gameengine.NotInAnySpot
+			} else {
+				log.Panicf("Invalid feedback char '%c'\n", text[i])
+			}
+		}
+
+		// update player state
+		playerenginelist.ProcessFeedback(&player, guess_word, feedback)
+	}
+}
+
 func main() {
 	if len(os.Args) > 1 && os.Args[1] == "benchmark" {
 		benchmark_random_word_list()
+	} else if len(os.Args) > 1 && os.Args[1] == "interactive" {
+		solve_interactive()
 	} else {
 		solve_random_word_list()
 	}
