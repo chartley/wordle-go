@@ -1,20 +1,20 @@
-package playerengine
+package playerenginetree
 
 import (
 	"log"
 	"wordle-go/gameengine"
-	"wordle-go/playerstate"
+	"wordle-go/playerstatetree"
 )
 
 type Player struct {
-	solnspace    playerstate.Node // active solution space
-	knownletters []rune           // letters we know exist but not where
+	solnspace    playerstatetree.Node // active solution space
+	knownletters []rune               // letters we know exist but not where
 	// letters we know are not in specific spots are pruned from tree
 }
 
 func InitPlayer(dictionary_path string) Player {
 	player := Player{}
-	player.solnspace = playerstate.BuildInitialTree(dictionary_path)
+	player.solnspace = playerstatetree.BuildInitialTree(dictionary_path)
 	player.knownletters = make([]rune, 0)
 	return player
 }

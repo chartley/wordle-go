@@ -1,4 +1,4 @@
-package playerstate
+package playerstatetree
 
 import (
 	"bufio"

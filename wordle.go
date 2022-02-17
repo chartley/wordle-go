@@ -5,13 +5,13 @@ package main
 import (
 	"log"
 	"wordle-go/gameengine"
-	"wordle-go/playerengine"
+	"wordle-go/playerenginetree"
 )
 
 func solve_random_word() {
 	// create the player
 	dictionary_path := "./dictionary_len5.txt"
-	player := playerengine.InitPlayer(dictionary_path)
+	player := playerenginetree.InitPlayer(dictionary_path)
 
 	// choose a random target word
 	target_word := gameengine.ChooseRandomWord(dictionary_path)
@@ -29,13 +29,13 @@ func solve_random_word() {
 	// take guesses until solved for out of tries
 	solved := false
 	for i := 0; i < 6; i += 1 {
-		guess_word := playerengine.Guess(player)
+		guess_word := playerenginetree.Guess(player)
 		feedback := gameengine.EvaluateSolution(target_word, guess_word)
 		if feedback == solvedFeedback {
 			log.Println("Solved in ", (i + 1))
 			solved = true
 		} else {
-			playerengine.ProcessFeedback(player, guess_word, feedback)
+			playerenginetree.ProcessFeedback(player, guess_word, feedback)
 		}
 	}
 
