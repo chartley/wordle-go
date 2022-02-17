@@ -6,7 +6,6 @@ import (
 	"log"
 	"wordle-go/gameengine"
 	"wordle-go/playerenginelist"
-	"wordle-go/playerenginetree"
 )
 
 const DictionaryPath = "./dictionary_len5.txt"
@@ -40,41 +39,6 @@ func solve_random_word_list() {
 			break
 		} else {
 			playerenginelist.ProcessFeedback(&player, guess_word, feedback)
-		}
-	}
-
-	if !solved {
-		log.Println("Failed to solve")
-	}
-}
-
-func solve_random_word_tree() {
-	// create the player
-	player := playerenginetree.InitPlayer(DictionaryPath)
-
-	// choose a random target word
-	target_word := gameengine.ChooseRandomWord(DictionaryPath)
-	log.Println("Target word", target_word)
-
-	// constant for "solved" feedback
-	solvedFeedback := [5]gameengine.LetterValidity{
-		gameengine.PresentAndCorrectSpot,
-		gameengine.PresentAndCorrectSpot,
-		gameengine.PresentAndCorrectSpot,
-		gameengine.PresentAndCorrectSpot,
-		gameengine.PresentAndCorrectSpot,
-	}
-
-	// take guesses until solved for out of tries
-	solved := false
-	for i := 0; i < 6; i += 1 {
-		guess_word := playerenginetree.Guess(player)
-		feedback := gameengine.EvaluateSolution(target_word, guess_word)
-		if feedback == solvedFeedback {
-			log.Println("Solved in ", (i + 1))
-			solved = true
-		} else {
-			playerenginetree.ProcessFeedback(player, guess_word, feedback)
 		}
 	}
 
