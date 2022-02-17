@@ -2,7 +2,6 @@ package playerenginelist
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"os"
 	"sort"
@@ -50,8 +49,6 @@ func InitPlayer(dictionary_path string) Player {
 }
 
 func Guess(player Player) string {
-	log.Println("playerenginelist.Guess()")
-
 	// count total character probabilities
 	countPerLetter := map[rune]int{} // {char : count}
 	for _, scoredWord := range player.possibleWords {
@@ -59,18 +56,19 @@ func Guess(player Player) string {
 			countPerLetter[char] = countPerLetter[char] + 1
 		}
 	}
-	x := 0
-	for char, count := range countPerLetter {
-		if x < 2 {
-			log.Println("Count[", string(char), "] = ", count)
-			x++
-		} else {
-			break
-		}
-	}
+	// restore for debugging logs
+	// x := 0
+	// for char, count := range countPerLetter {
+	// 	if x < 2 {
+	// 		log.Println("Count[", string(char), "] = ", count)
+	// 		x++
+	// 	} else {
+	// 		break
+	// 	}
+	// }
 
 	// score each word
-	for i, scoredWord := range player.possibleWords {
+	for _, scoredWord := range player.possibleWords {
 		score := 0
 		seenChars := map[rune]bool{} // add score only once per char
 		for _, char := range scoredWord.word {
@@ -80,28 +78,26 @@ func Guess(player Player) string {
 			}
 		}
 		scoredWord.score = score
-		if i < 3 {
-			log.Println("Write Score[", scoredWord.word, "] = ", score)
-		}
 	}
 
-	for i, scoredWord := range player.possibleWords {
-		log.Println("Read Score[", scoredWord.word, "] = ", scoredWord.score)
-		if i >= 2 {
-			break
-		}
-	}
+	// restore for debugging logs
+	// for i, scoredWord := range player.possibleWords {
+	// 	log.Println("Read Score[", scoredWord.word, "] = ", scoredWord.score)
+	// 	if i >= 2 {
+	// 		break
+	// 	}
+	// }
 
 	// sort possibleWords by descending score to get ranked guesses
 	sort.Slice(player.possibleWords, func(i, j int) bool {
 		return player.possibleWords[i].score > player.possibleWords[j].score
 	})
-	for i, pw := range player.possibleWords {
-		fmt.Printf("%s, %d\n", pw.word, pw.score)
-		if i > 2 {
-			break
-		}
-	}
+	// for i, pw := range player.possibleWords {
+	// 	log.Printf("Guess() %s, %d\n", pw.word, pw.score)
+	// 	if i > 2 {
+	// 		break
+	// 	}
+	// }
 	return player.possibleWords[0].word
 }
 
