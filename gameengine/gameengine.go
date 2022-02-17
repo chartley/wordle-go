@@ -34,6 +34,14 @@ func EvaluateSolution(reference_word string, guess_word string) [5]LetterValidit
 }
 
 func ChooseRandomWord(dictionary_path string) string {
+	lines := ReadAllWords(dictionary_path)
+
+	rand.Seed(time.Now().UnixNano())
+	randomIndex := rand.Intn(len(lines))
+	return lines[randomIndex]
+}
+
+func ReadAllWords(dictionary_path string) []string {
 	file, err := os.Open(dictionary_path)
 	if err != nil {
 		log.Fatal(err)
@@ -46,7 +54,5 @@ func ChooseRandomWord(dictionary_path string) string {
 		lines = append(lines, scanner.Text())
 	}
 
-	rand.Seed(time.Now().UnixNano())
-	randomIndex := rand.Intn(len(lines))
-	return lines[randomIndex]
+	return lines
 }
