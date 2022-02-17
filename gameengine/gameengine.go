@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"os"
 	"strings"
+	"time"
 )
 
 type LetterValidity string
@@ -45,6 +46,7 @@ func ChooseRandomWord(dictionary_path string) string {
 		lines = append(lines, scanner.Text())
 	}
 
+	rand.Seed(time.Now().UnixNano())
 	randomIndex := rand.Intn(len(lines))
 	return lines[randomIndex]
 }
