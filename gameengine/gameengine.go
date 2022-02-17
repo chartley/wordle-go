@@ -30,7 +30,32 @@ func EvaluateSolution(reference_word string, guess_word string) [5]LetterValidit
 			feedback[i] = NotInAnySpot
 		}
 	}
+
+	pretty := PrettyPrintFeedback(feedback)
+	log.Printf("EvaluateSolution(%s vs %s) = %s\n", guess_word, reference_word, pretty)
+
 	return feedback
+}
+
+const (
+	GreenColor  = "\033[1;42m \033[0m "
+	YellowColor = "\033[1;103m \033[0m "
+	GreyColor   = "\033[1;47m \033[0m "
+)
+
+func PrettyPrintFeedback(feedback [5]LetterValidity) string {
+	s := ""
+	for _, f := range feedback {
+		switch f {
+		case PresentAndCorrectSpot:
+			s += GreenColor
+		case PresentButWrongSpot:
+			s += YellowColor
+		case NotInAnySpot:
+			s += GreyColor
+		}
+	}
+	return s
 }
 
 func ChooseRandomWord(dictionary_path string) string {
