@@ -35,7 +35,7 @@ func solve_random_word() {
 			log.Println("Solved in ", (i + 1))
 			solved = true
 		} else {
-			playerengine.ProcessFeedback(player, feedback)
+			playerengine.ProcessFeedback(player, guess_word, feedback)
 		}
 	}
 

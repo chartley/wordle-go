@@ -107,3 +107,28 @@ func get_words_recurse(node Node, prefix string) []string {
 	}
 	return all_words
 }
+
+// // gives frequency, where array index 0=a ... 25=z
+// func get_frequency_by_letter(root Node) []int {
+// 	frequency_by_letter := []int{}
+// 	for char, child_node := range root.children {
+// 		words := get_frequency_by_letter_recurse(child_node, string(char))
+// 		frequency_by_letter = append(all_words, words...)
+// 	}
+// 	return frequency_by_letter
+// }
+
+// func get_frequency_by_letter_recurse(node Node, prefix string) []string {
+// 	// log.Println("get_words_recurse() prefix", prefix)
+// 	all_words := []string{}
+// 	for char, child_node := range node.children {
+// 		keys := reflect.ValueOf(child_node.children).MapKeys()
+// 		if len(keys) > 0 {
+// 			words := get_frequency_by_letter_recurse(child_node, prefix+string(char))
+// 			all_words = append(all_words, words...)
+// 		} else {
+// 			all_words = append(all_words, prefix+string(char))
+// 		}
+// 	}
+// 	return all_words
+// }
