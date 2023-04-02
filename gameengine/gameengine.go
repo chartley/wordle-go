@@ -2,6 +2,7 @@ package gameengine
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"math/rand"
 	"os"
@@ -31,28 +32,28 @@ func EvaluateSolution(reference_word string, guess_word string) [5]LetterValidit
 		}
 	}
 
-	pretty := PrettyPrintFeedback(feedback)
+	pretty := PrettyPrintFeedbackWithCharacters(feedback, guess_word)
 	log.Printf("EvaluateSolution(%s vs %s) = %s\n", guess_word, reference_word, pretty)
 
 	return feedback
 }
 
 const (
-	GreenColor  = "\033[1;42m \033[0m "
-	YellowColor = "\033[1;103m \033[0m "
-	GreyColor   = "\033[1;47m \033[0m "
+	GreenColorSub  = "\033[1;42m%s\033[0m "
+	YellowColorSub = "\033[1;103m%s\033[0m "
+	GreyColorSub   = "\033[1;47m%s\033[0m "
 )
 
-func PrettyPrintFeedback(feedback [5]LetterValidity) string {
+func PrettyPrintFeedbackWithCharacters(feedback [5]LetterValidity, guess_word string) string {
 	s := ""
-	for _, f := range feedback {
+	for i, f := range feedback {
 		switch f {
 		case PresentAndCorrectSpot:
-			s += GreenColor
+			s += fmt.Sprintf(GreenColorSub, string(guess_word[i]))
 		case PresentButWrongSpot:
-			s += YellowColor
+			s += fmt.Sprintf(YellowColorSub, string(guess_word[i]))
 		case NotInAnySpot:
-			s += GreyColor
+			s += fmt.Sprintf(GreyColorSub, string(guess_word[i]))
 		}
 	}
 	return s
